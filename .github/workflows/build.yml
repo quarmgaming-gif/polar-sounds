@@ -1,0 +1,59 @@
+name: Build PolarStick Addons
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+      - name: setup jdk
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+      - name: make gradlew executable
+        run: chmod +x ./gradlew
+      - name: build Polar Trails
+        run: ./gradlew -p polartrails build
+      - name: build Polar HUD
+        run: ./gradlew -p polarhud build
+      - name: build Polar Sounds
+        run: ./gradlew -p polarsounds build
+      - name: build Polar Menu
+        run: ./gradlew -p polarmenu build
+      - name: collect jars
+        run: |
+          set -e
+          mkdir -p out
+          pick() {
+            # bierze zbudowany jar pomijając warianty -dev i -sources, niezależnie od numeru wersji
+            ls "$1"/build/libs/*.jar | grep -v -- '-dev.jar' | grep -v -- '-sources.jar' | head -n 1
+          }
+          echo "polartrails/build/libs:"; ls -la polartrails/build/libs/
+          echo "polarhud/build/libs:"; ls -la polarhud/build/libs/
+          echo "polarsounds/build/libs:"; ls -la polarsounds/build/libs/
+          echo "polarmenu/build/libs:"; ls -la polarmenu/build/libs/
+          cp "$(pick polartrails)" out/polar-trails.jar
+          cp "$(pick polarhud)" out/polar-hud.jar
+          cp "$(pick polarsounds)" out/polar-sounds.jar
+          cp "$(pick polarmenu)" out/polar-menu.jar
+          ls -la out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PolarStick-Addons
+          path: out/*.jar
+      - name: create release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: addons-${{ github.run_number }}
+          name: PolarStick Addons build ${{ github.run_number }}
+          files: out/*.jar
