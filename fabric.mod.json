@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "polarsounds",
+	"version": "${version}",
+	"name": "Polar Sounds",
+	"description": "Mocniejsza fanfara i iskry przy awansie poziomu doswiadczenia - czysto dzwiekowo-wizualny dodatek.",
+	"authors": [
+		"PolarStick"
+	],
+	"license": "CC0-1.0",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.polarstick.polarsounds.PolarSoundsClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
