@@ -12,23 +12,23 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
       - name: setup jdk
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'microsoft'
-      - name: make gradlew executable
-        run: chmod +x ./gradlew
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.8.2'
       - name: build Polar Trails
-        run: ./gradlew -p polartrails build
+        run: gradle -p polartrails build
       - name: build Polar HUD
-        run: ./gradlew -p polarhud build
+        run: gradle -p polarhud build
       - name: build Polar Sounds
-        run: ./gradlew -p polarsounds build
+        run: gradle -p polarsounds build
       - name: build Polar Menu
-        run: ./gradlew -p polarmenu build
+        run: gradle -p polarmenu build
       - name: collect jars
         run: |
           set -e
